@@ -1,36 +1,39 @@
 <template>
   <div v-if="task !== undefined">
-    <h1>Task „{{ task.name }}“</h1>
+    <h1>Task »{{ task.name }}«</h1>
 
-    <p>
+    <div class="btn-group btn-group-block">
       <router-link :to="{ name: 'Home' }" class="btn">
-        <i class="icon icon-arrow-left"></i> Back
+        <i class="icon icon-arrow-left"></i> Home
       </router-link>
       <button class="btn btn-error"
               @click="deleteTask">
         <i class="icon icon-cross"></i> Delete Task
       </button>
-      <router-link :to="{ name: 'Home' }" class="btn btn-primary">
-        <i class="icon icon-arrow-right"></i> Grade Task
-      </router-link>
-    </p>
+    </div>
+    <router-link :to="{ name: 'GradeTask', params: { id: task.id } }" class="btn btn-primary btn-block">
+      <i class="icon icon-arrow-right"></i> Grade Task
+    </router-link>
 
     <p>
-      <input v-model="taskName"
-             class="form-input"
-             type="text" />
+      <label class="form-label">
+        Task name:
+        <input v-model="taskName"
+               class="form-input"
+               type="text" />
+      </label>
     </p>
 
     <SubTaskList :task="task" />
 
     <h2>Import/Export</h2>
-    <div class="toast toast-error"
-         v-if="jsonInvalid">
+    <div v-if="jsonInvalid"
+         class="toast toast-error">
       Ungültige Eingabe.
     </div>
-    <textarea class="form-input"
-              v-model="taskJson"
+    <textarea v-model="taskJson"
               :class="{ 'is-error': jsonInvalid }"
+              class="form-input"
               rows="20"></textarea>
   </div>
   <div v-else>
@@ -85,7 +88,7 @@ export default {
       }
       let newTask = new Task()
       try {
-         newTask = deserialize(Task, JSON.parse(value))
+        newTask = deserialize(Task, JSON.parse(value))
       } catch (e) {
         console.warn(e)
         jsonInvalid.value = true
@@ -101,7 +104,7 @@ export default {
       taskJson,
       jsonInvalid,
       deleteTask () {
-        if (!confirm('Really delete task „' + task.value.name + '“?')) {
+        if (!confirm('Really delete task »' + task.value.name + '«?')) {
           return
         }
 

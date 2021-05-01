@@ -17,9 +17,9 @@
           </th>
         </tr>
       </thead>
-      <SubTaskRow v-for="(subTask, i) in task.subtasks"
-                  :key="i"
-                  :subtask="subTask"
+      <SubTaskRow v-for="subtask in task.subtasks"
+                  :key="subtask.id"
+                  :subtask="subtask"
                   :task="task" />
     </table>
     <button class="btn btn-block btn-primary"

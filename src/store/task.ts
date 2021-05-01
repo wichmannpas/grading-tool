@@ -1,6 +1,8 @@
 import { Store } from './index'
 import { Task } from '@/models/task'
 import { deserialize, serialize } from 'serializr'
+import { SubTask } from '@/models/subtask'
+import { SubtaskComment } from '@/models/subtaskComment'
 
 interface TaskInfo extends Object {
   tasks: Task[]
@@ -67,6 +69,31 @@ class TaskStore extends Store<TaskInfo> {
     this.state.tasks.sort((a, b) => a.name.localeCompare(b.name))
 
     this.updateLocalStorage()
+  }
+
+  updateSubtask (task: Task | undefined, subtask: SubTask | undefined, callback: (newSubtask: SubTask) => void) {
+    if (task === undefined || subtask === undefined) {
+      return
+    }
+    const newSubtask = Object.assign(new SubTask(), subtask)
+    callback(newSubtask)
+    const newTask = Object.assign(new Task(), task)
+    const subtaskIndex = newTask.subtasks.findIndex(subtask => subtask.id === newSubtask.id)
+    newTask.subtasks.splice(subtaskIndex, 1, newSubtask)
+    this.updateTask(newTask)
+  }
+
+  updateSubtaskComment (task: Task | undefined, subtask: SubTask | undefined, subtaskComment: SubtaskComment | undefined,
+                        callback: (newComment: SubtaskComment) => void) {
+    if (task === undefined || subtask === undefined || subtaskComment === undefined) {
+      return
+    }
+    const newComment = Object.assign(new SubtaskComment(), subtaskComment)
+    callback(newComment)
+    this.updateSubtask(task, subtask, newSubtask => {
+      const index = newSubtask.comments.findIndex(comment => comment.id === newComment.id)
+      newSubtask.comments.splice(index, 1, newComment)
+    })
   }
 }
 

@@ -1,5 +1,6 @@
-import { identifier, list, object, serializable } from 'serializr'
+import { custom, identifier, list, object, serializable } from 'serializr'
 import { randomString } from '@/utils'
+import { SubtaskComment } from '@/models/subtaskComment'
 
 export class SubTask {
   constructor () {
@@ -12,9 +13,9 @@ export class SubTask {
   @serializable
   name: string = ''
 
-  @serializable
+  @serializable(custom((value: any) => parseFloat(value), (value: any) => value.toString()))
   maxPoints: number = 0
 
-  @serializable(list(object(Comment)))
-  comments: Comment[] = []
+  @serializable(list(object(SubtaskComment)))
+  comments: SubtaskComment[] = []
 }

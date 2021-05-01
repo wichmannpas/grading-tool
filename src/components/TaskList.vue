@@ -4,7 +4,7 @@
       <li v-for="(task, i) in tasks"
           :key="i">
         <router-link :to="{ name: 'Task', params: { id: task.id } }">
-          „{{ task.name }}“
+          »{{ task.name }}«
         </router-link>
       </li>
     </ul>

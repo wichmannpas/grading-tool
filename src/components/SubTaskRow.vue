@@ -29,7 +29,7 @@
       <ul>
         <li v-for="(comment, i) in subtask.comments"
             :key="i">
-          {{ comment }}
+          {{ comment.text }} ({{ comment.points }}P)
         </li>
       </ul>
     </td>
@@ -68,29 +68,13 @@ export default defineComponent({
       subtaskMaxPoints.value = props.subtask.maxPoints
     })
 
-    function updateSubtask (callback: CallableFunction) {
-      // for some reason, TypeScript thinks that props.subtask is possibly undefined despite the check
-      // up here; as a workaround, copy its value into a local variable
-      const propsTask = props.task as Task | undefined
-      const propsSubtask = props.subtask as SubTask | undefined
-      if (propsTask === undefined || propsSubtask === undefined) {
-        return
-      }
-      const newSubtask = Object.assign(new SubTask(), propsSubtask)
-      callback(newSubtask)
-      const newTask = Object.assign(new Task(), propsTask)
-      const subtaskIndex = newTask.subtasks.findIndex(subtask => subtask.id === propsSubtask.id)
-      newTask.subtasks.splice(subtaskIndex, 1, newSubtask)
-      taskStore.updateTask(newTask)
-    }
-
     watch(subtaskName, name => {
-      updateSubtask((newSubtask: SubTask) => {
+      taskStore.updateSubtask(props.task, props.subtask, (newSubtask: SubTask) => {
         newSubtask.name = name
       })
     })
     watch(subtaskMaxPoints, maxPoints => {
-      updateSubtask((newSubtask: SubTask) => {
+      taskStore.updateSubtask(props.task, props.subtask, (newSubtask: SubTask) => {
         newSubtask.maxPoints = maxPoints
       })
     })
