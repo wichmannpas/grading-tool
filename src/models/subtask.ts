@@ -1,8 +1,7 @@
 import { identifier, list, object, serializable } from 'serializr'
 import { randomString } from '@/utils'
-import { SubTask } from '@/models/subtask'
 
-export class Task {
+export class SubTask {
   constructor () {
     this.id = randomString()
   }
@@ -13,6 +12,9 @@ export class Task {
   @serializable
   name: string = ''
 
-  @serializable(list(object(SubTask)))
-  subtasks: SubTask[] = []
+  @serializable
+  maxPoints: number = 0
+
+  @serializable(list(object(Comment)))
+  comments: Comment[] = []
 }

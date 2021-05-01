@@ -23,9 +23,6 @@ import { Task } from '@/models/task'
 
 export default defineComponent({
   name: 'TaskList',
-  props: {
-    msg: String
-  },
   setup () {
     taskStore.sortTasks()
     return {
