@@ -33,6 +33,7 @@
     </div>
     <textarea v-model="taskJson"
               :class="{ 'is-error': jsonInvalid }"
+              @click="$event.target.select()"
               class="form-input"
               rows="20"></textarea>
   </div>

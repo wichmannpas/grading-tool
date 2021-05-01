@@ -45,7 +45,6 @@ class TaskStore extends Store<TaskInfo> {
   }
 
   addTask (task: Task) {
-    console.log(task)
     this.state.tasks.push(task)
 
     this.updateLocalStorage()

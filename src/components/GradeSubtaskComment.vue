@@ -6,6 +6,7 @@
       <div class="col-1">
         <span class="form-checkbox form-inline">
           <input v-model="selected"
+                 :disabled="done"
                  type="checkbox" />
           <i class="form-icon"></i>
         </span>
@@ -64,13 +65,16 @@ import { SubtaskComment } from '@/models/subtaskComment'
 import { taskStore } from '@/store/task'
 import { SubTask } from '@/models/subtask'
 import { Task } from '@/models/task'
+import { Grading } from '@/models/grading'
+import { gradingStore } from '@/store/grading'
 
 export default defineComponent({
   name: 'GradeSubtaskComment',
   props: {
     task: Task,
     subtask: SubTask,
-    subtaskComment: SubtaskComment
+    subtaskComment: SubtaskComment,
+    done: Boolean
   },
   setup (props) {
     const selected = ref(false)
@@ -119,6 +123,32 @@ export default defineComponent({
       taskStore.updateSubtaskComment(props.task, props.subtask, props.subtaskComment, newComment => {
         newComment.points = value
       })
+    })
+
+    watch(selected, value => {
+      const subtaskComment: SubtaskComment | undefined = props.subtaskComment
+      if (subtaskComment === undefined) {
+        return
+      }
+      const grading = Object.assign(new Grading(), gradingStore.getState().currentGrading)
+      grading.commentIds = [...grading.commentIds]
+      const index = grading.commentIds.indexOf(subtaskComment.id)
+      if (value) {
+        if (index >= 0)
+          return
+        grading.commentIds.push(subtaskComment.id)
+      } else {
+        if (index < 0)
+          return
+        grading.commentIds.splice(index, 1)
+      }
+      gradingStore.setCurrentGrading(grading)
+    })
+    watch(() => gradingStore.getState().currentGrading.commentIds, value => {
+      if (props.subtaskComment === undefined) {
+        return
+      }
+      selected.value = value.indexOf(props.subtaskComment.id) >= 0
     })
 
     return {

@@ -18,3 +18,17 @@
     margin-bottom: auto;
   }
 }
+
+.grade-subtask {
+  margin-bottom: 1em;
+
+  padding-left: 1em;
+  border-left: #ffc636 1em solid;
+  &.done {
+    border-left: #3eaa8d 1em solid;
+  }
+}
+
+.feedback-textarea {
+  cursor: text !important;
+}
