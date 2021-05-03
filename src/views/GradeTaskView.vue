@@ -44,7 +44,8 @@
                    @click="$event.target.select()" />
           </div>
         </label>
-        <textarea v-model="feedback.text"
+        <textarea ref="feedbackTextDisplay"
+                  v-model="feedback.text"
                   :class="{ 'is-error': remainingSubtasks > 0 }"
                   class="form-input feedback-textarea"
                   readonly
@@ -59,7 +60,7 @@
 </template>
 
 <script>
-import {computed} from 'vue';
+import {computed, ref, Ref, watch} from 'vue';
 import {taskStore} from "@/store/task";
 import router from "@/router";
 import GradeSubtask from "@/components/GradeSubtask";
@@ -73,6 +74,7 @@ export default {
     id: String
   },
   setup (props) {
+    const feedbackTextDisplay = ref(null)
     const task = computed(() => {
       const task = taskStore.getTaskById(props.id)
       if (task === undefined) {
@@ -141,26 +143,38 @@ export default {
       }
     })
 
+    const remainingSubtasks = computed(() => {
+      if (task.value === undefined) {
+        return 0
+      }
+      const subtaskIds = task.value.subtasks.map(subtask => subtask.id)
+      grading.value.doneSubtaskIds.forEach(doneSubtaskId => {
+        const index = subtaskIds.indexOf(doneSubtaskId)
+        if (index < 0) {
+          console.warn('subtask not found in all subtasks array!')
+          return
+        }
+        subtaskIds.splice(index, 1)
+      })
+      return subtaskIds.length
+    })
+    watch(remainingSubtasks, value => {
+      if (feedbackTextDisplay.value === null) {
+        return
+      }
+      if (value === 0) {
+        feedbackTextDisplay.value.focus()
+        feedbackTextDisplay.value.select()
+      }
+    })
+
     return {
       task,
       grading,
       feedback,
+      feedbackTextDisplay,
       newGrading: createNewGrading,
-      remainingSubtasks: computed(() => {
-        if (task.value === undefined) {
-          return 0
-        }
-        const subtaskIds = task.value.subtasks.map(subtask => subtask.id)
-        grading.value.doneSubtaskIds.forEach(doneSubtaskId => {
-          const index = subtaskIds.indexOf(doneSubtaskId)
-          if (index < 0) {
-            console.warn('subtask not found in all subtasks array!')
-            return
-          }
-          subtaskIds.splice(index, 1)
-        })
-        return subtaskIds.length
-      })
+      remainingSubtasks
     }
   }
 }
