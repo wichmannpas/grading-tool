@@ -7,7 +7,6 @@ export class Grading {
     this.id = randomString()
   }
 
-  @serializable(identifier())
   id: string = ''
 
   @serializable(optional(object(Task)))

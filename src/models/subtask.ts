@@ -7,7 +7,6 @@ export class SubTask {
     this.id = randomString()
   }
 
-  @serializable(identifier())
   id: string = ''
 
   @serializable

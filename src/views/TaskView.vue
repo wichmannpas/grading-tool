@@ -33,9 +33,10 @@
     </div>
     <textarea v-model="taskJson"
               :class="{ 'is-error': jsonInvalid }"
-              @click="$event.target.select()"
               class="form-input"
-              rows="20"></textarea>
+              rows="20"
+              @click="$event.target.select()"
+              @keyup="handleJsonUpdate"></textarea>
   </div>
   <div v-else>
     <h1>Task Not Found</h1>
@@ -68,6 +69,7 @@ export default {
       return task
     })
     const taskJson = ref('')
+    let lastJsonValue = ''
     const jsonInvalid = ref(false)
 
     watchEffect(() => {
@@ -83,13 +85,19 @@ export default {
       newTask.name = name
       taskStore.updateTask(newTask)
     })
-    watch(taskJson, value => {
+
+    function handleJsonUpdate () {
+      if (taskJson.value === lastJsonValue) {
+        // no change
+        return
+      }
+      lastJsonValue = taskJson.value
       if (task.value === undefined) {
         return
       }
       let newTask = new Task()
       try {
-        newTask = deserialize(Task, JSON.parse(value))
+        newTask = deserialize(Task, JSON.parse(taskJson.value))
       } catch (e) {
         console.warn(e)
         jsonInvalid.value = true
@@ -98,12 +106,14 @@ export default {
       jsonInvalid.value = false
       newTask.id = task.value.id
       taskStore.updateTask(newTask)
-    })
+    }
+
     return {
       task,
       taskName,
       taskJson,
       jsonInvalid,
+      handleJsonUpdate,
       deleteTask () {
         if (!confirm('Really delete task »' + task.value.name + '«?')) {
           return

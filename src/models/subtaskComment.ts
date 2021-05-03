@@ -8,7 +8,6 @@ export class SubtaskComment {
     this.id = randomString()
   }
 
-  @serializable(identifier())
   id: string = ''
 
   @serializable
