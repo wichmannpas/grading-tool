@@ -36,7 +36,7 @@
             <strong>Total points:</strong>
           </div>
           <div class="column col-8">
-            <input v-model="totalPoints"
+            <input v-model="feedback.totalPoints"
                    class="form-input"
                    readonly
                    step="0.5"
@@ -44,7 +44,7 @@
                    @click="$event.target.select()" />
           </div>
         </label>
-        <textarea v-model="feedback"
+        <textarea v-model="feedback.text"
                   :class="{ 'is-error': remainingSubtasks > 0 }"
                   class="form-input feedback-textarea"
                   readonly
@@ -102,63 +102,49 @@ export default {
         return
       }
 
-      let result = ''
+      let totalPoints = 0
+      let text = ''
       task.value.subtasks.forEach((subtask, index) => {
         if (index > 0) {
-          result += '\n\n'
+          text += '\n\n'
         }
 
-        result += subtask.name + '\n'
-        let points = parseFloat(subtask.maxPoints)
+        text += subtask.name + '\n'
+        const maxPoints = parseFloat(subtask.maxPoints)
+        let points = maxPoints
 
         subtask.comments.forEach(comment => {
           if (grading.value.commentIds.indexOf(comment.id) >= 0) {
-            result += comment.text + ' (' + comment.points.toString() + 'P)\n'
-            points += comment.points
+            const commentPoints = parseFloat(comment.points)
+            text += comment.text
+            if (commentPoints !== 0) {
+              text += ' (' + commentPoints.toString() + 'P)'
+            }
+            text += '\n'
+
+            points += commentPoints
           }
         })
 
-        if (points > parseFloat(subtask.maxPoints)) {
+        if (points > maxPoints) {
           console.warn('too many points!')
-          points = subtask.maxPoints
+          points = maxPoints
         } else if (points < 0) {
           points = 0
         }
-        result += points.toString() + '/' + subtask.maxPoints.toString()
-      })
-      return result
-    })
-    const totalPoints = computed(() => {
-      if (task.value === undefined) {
-        return
-      }
-
-      let totalPoints = 0
-      task.value.subtasks.forEach(subtask => {
-        let points = parseFloat(subtask.maxPoints)
-
-        subtask.comments.forEach(comment => {
-          if (grading.value.commentIds.indexOf(comment.id) >= 0) {
-            points += comment.points
-          }
-        })
-
-        if (points > parseFloat(subtask.maxPoints)) {
-          console.warn('too many points!')
-          points = subtask.maxPoints
-        } else if (points < 0) {
-          points = 0
-        }
+        text += points.toString() + '/' + subtask.maxPoints.toString()
         totalPoints += points
       })
-      return totalPoints
+      return {
+        totalPoints,
+        text
+      }
     })
 
     return {
       task,
       grading,
       feedback,
-      totalPoints,
       newGrading: createNewGrading,
       remainingSubtasks: computed(() => {
         if (task.value === undefined) {
