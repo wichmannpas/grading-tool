@@ -76,7 +76,9 @@ export default defineComponent({
       done,
       addComment () {
         taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
-          newSubtask.comments.push(new SubtaskComment(true))
+          const newComment = new SubtaskComment(true)
+          newSubtask.comments.push(newComment)
+          gradingStore.setCurrentGradingCommentActive(newComment, true)
         })
       }
     }
