@@ -24,6 +24,7 @@
 
   padding-left: 1em;
   border-left: #ffc636 1em solid;
+
   &.done {
     border-left: #3eaa8d 1em solid;
   }
@@ -31,4 +32,9 @@
 
 .feedback-textarea {
   cursor: text !important;
+}
+
+.total-points > div {
+  margin-top: auto;
+  margin-bottom: auto;
 }

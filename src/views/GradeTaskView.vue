@@ -31,6 +31,19 @@
              class="toast toast-warning">
           <em>{{ remainingSubtasks }}</em> subtasks not yet graded.
         </div>
+        <label class="columns total-points">
+          <div class="column col-4">
+            <strong>Total points:</strong>
+          </div>
+          <div class="column col-8">
+            <input v-model="totalPoints"
+                   class="form-input"
+                   readonly
+                   step="0.5"
+                   type="number"
+                   @click="$event.target.select()" />
+          </div>
+        </label>
         <textarea v-model="feedback"
                   :class="{ 'is-error': remainingSubtasks > 0 }"
                   class="form-input feedback-textarea"
@@ -115,11 +128,37 @@ export default {
       })
       return result
     })
+    const totalPoints = computed(() => {
+      if (task.value === undefined) {
+        return
+      }
+
+      let totalPoints = 0
+      task.value.subtasks.forEach(subtask => {
+        let points = parseFloat(subtask.maxPoints)
+
+        subtask.comments.forEach(comment => {
+          if (grading.value.commentIds.indexOf(comment.id) >= 0) {
+            points += comment.points
+          }
+        })
+
+        if (points > parseFloat(subtask.maxPoints)) {
+          console.warn('too many points!')
+          points = subtask.maxPoints
+        } else if (points < 0) {
+          points = 0
+        }
+        totalPoints += points
+      })
+      return totalPoints
+    })
 
     return {
       task,
       grading,
       feedback,
+      totalPoints,
       newGrading: createNewGrading,
       remainingSubtasks: computed(() => {
         if (task.value === undefined) {
