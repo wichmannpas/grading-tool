@@ -37,6 +37,7 @@ import { taskStore } from '@/store/task'
 import { SubtaskComment } from '@/models/subtaskComment'
 import { gradingStore } from '@/store/grading'
 import { Grading } from '@/models/grading'
+import { authStore } from '@/store/auth'
 
 export default defineComponent({
   name: 'GradeSubtask',
@@ -77,6 +78,8 @@ export default defineComponent({
       addComment () {
         taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
           const newComment = new SubtaskComment(true)
+          newComment.lastChanged = new Date()
+          newComment.lastChangeClientId = authStore.getClientId()
           newSubtask.comments.push(newComment)
           gradingStore.setCurrentGradingCommentActive(newComment, true)
         })

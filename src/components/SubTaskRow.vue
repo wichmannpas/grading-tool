@@ -49,6 +49,7 @@ import { computed, defineComponent, ref, watch, watchEffect } from 'vue'
 import { SubTask } from '@/models/subtask'
 import { Task } from '@/models/task'
 import { taskStore } from '@/store/task'
+import { authStore } from '@/store/auth'
 
 export default defineComponent({
   name: 'SubTaskRow',
@@ -69,6 +70,9 @@ export default defineComponent({
     })
 
     watch(subtaskName, name => {
+      if (props.subtask !== undefined && subtaskName.value === props.subtask.name) {
+        return
+      }
       taskStore.updateSubtask(props.task, props.subtask, (newSubtask: SubTask) => {
         newSubtask.name = name
       })
@@ -115,6 +119,8 @@ export default defineComponent({
           return
         }
         const newTask = Object.assign(new Task(), propsTask)
+        newTask.lastChanged = new Date()
+        newTask.lastChangeClientId = authStore.getClientId()
         const subtaskIndex = newTask.subtasks.findIndex(subtask => subtask.id === propsSubtask.id)
         newTask.subtasks.splice(subtaskIndex, 1)
         taskStore.updateTask(newTask)
@@ -128,6 +134,8 @@ export default defineComponent({
           return
         }
         const newTask = Object.assign(new Task(), propsTask)
+        newTask.lastChanged = new Date()
+        newTask.lastChangeClientId = authStore.getClientId()
         const subtaskIndex = newTask.subtasks.findIndex(subtask => subtask.id === propsSubtask.id)
 
         const newIndex = subtaskIndex + direction

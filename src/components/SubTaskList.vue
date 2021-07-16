@@ -36,6 +36,7 @@ import { Task } from '@/models/task'
 import { taskStore } from '@/store/task'
 import { SubTask } from '@/models/subtask'
 import SubTaskRow from '@/components/SubTaskRow.vue'
+import { authStore } from '@/store/auth'
 
 export default defineComponent({
   name: 'SubTaskList',
@@ -52,7 +53,9 @@ export default defineComponent({
         }
 
         const newTask = Object.assign(new Task(), props.task)
-        newTask.subtasks.push(new SubTask())
+        newTask.lastChanged = new Date()
+        newTask.lastChangeClientId = authStore.getClientId()
+        newTask.subtasks.push(new SubTask(authStore.getClientId()))
         taskStore.updateTask(newTask)
       }
     }

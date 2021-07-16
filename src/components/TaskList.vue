@@ -20,6 +20,7 @@
 import { defineComponent } from 'vue'
 import { taskStore } from '@/store/task'
 import { Task } from '@/models/task'
+import { authStore } from '@/store/auth'
 
 export default defineComponent({
   name: 'TaskList',
@@ -28,7 +29,7 @@ export default defineComponent({
     return {
       tasks: taskStore.getState().tasks,
       addTask () {
-        taskStore.addTask(new Task())
+        taskStore.addTask(new Task(authStore.getState().clientId))
       }
     }
   }

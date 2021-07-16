@@ -1,13 +1,21 @@
-import { custom, identifier, list, object, serializable } from 'serializr'
+import { custom, date, identifier, list, object, serializable } from 'serializr'
 import { randomString } from '@/utils'
 import { SubtaskComment } from '@/models/subtaskComment'
 
 export class SubTask {
-  constructor () {
+  constructor (clientId: string = '') {
     this.id = randomString()
+    this.lastChangeClientId = clientId
   }
 
+  @serializable(identifier())
   id: string = ''
+
+  @serializable(date())
+  lastChanged: Date = new Date()
+
+  @serializable
+  lastChangeClientId = ''
 
   @serializable
   name: string = ''

@@ -109,6 +109,9 @@ export default defineComponent({
     })
 
     watch(commentText, value => {
+      if (props.subtaskComment !== undefined && commentText.value === props.subtaskComment.text) {
+        return
+      }
       taskStore.updateSubtaskComment(props.task, props.subtask, props.subtaskComment, newComment => {
         newComment.text = value
       })

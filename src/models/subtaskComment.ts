@@ -1,4 +1,4 @@
-import { identifier, serializable } from 'serializr'
+import { date, identifier, serializable } from 'serializr'
 import { randomString } from '@/utils'
 
 export class SubtaskComment {
@@ -8,7 +8,14 @@ export class SubtaskComment {
     this.id = randomString()
   }
 
+  @serializable(identifier())
   id: string = ''
+
+  @serializable(date())
+  lastChanged: Date = new Date()
+
+  @serializable
+  lastChangeClientId = ''
 
   @serializable
   text: string = ''

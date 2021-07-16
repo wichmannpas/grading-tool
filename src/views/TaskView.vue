@@ -50,6 +50,7 @@ import router from "@/router";
 import {Task} from "@/models/task";
 import SubTaskList from "@/components/SubTaskList";
 import {deserialize, serialize} from "serializr";
+import {authStore} from "@/store/auth";
 
 export default {
   name: 'TaskView',
@@ -82,6 +83,8 @@ export default {
     })
     watch(taskName, name => {
       const newTask = Object.assign(new Task(), task.value)
+      newTask.lastChanged = new Date()
+      newTask.lastChangeClientId = authStore.getClientId()
       newTask.name = name
       taskStore.updateTask(newTask)
     })
@@ -105,6 +108,8 @@ export default {
       }
       jsonInvalid.value = false
       newTask.id = task.value.id
+      newTask.lastChanged = new Date()
+      newTask.lastChangeClientId = authStore.getClientId()
       taskStore.updateTask(newTask)
     }
 
