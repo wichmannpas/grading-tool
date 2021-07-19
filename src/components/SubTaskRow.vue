@@ -78,6 +78,9 @@ export default defineComponent({
       })
     })
     watch(subtaskMaxPoints, maxPoints => {
+      if (props.subtask !== undefined && subtaskMaxPoints.value === props.subtask.maxPoints) {
+        return
+      }
       taskStore.updateSubtask(props.task, props.subtask, (newSubtask: SubTask) => {
         newSubtask.maxPoints = maxPoints
       })
