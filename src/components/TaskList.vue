@@ -13,14 +13,26 @@
       <i class="icon icon-plus"></i>
       Add Task
     </button>
+    <h3 />
+    <h2>Export</h2>
+    <div v-if="jsonInvalid"
+         class="toast toast-error">
+      Ungültige Eingabe.
+    </div>
+    <textarea v-model="tasksJson"
+              class="form-input"
+              readonly
+              rows="20"
+              @click="$event.target.select()"></textarea>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { taskStore } from '@/store/task'
 import { Task } from '@/models/task'
 import { authStore } from '@/store/auth'
+import { serialize } from 'serializr'
 
 export default defineComponent({
   name: 'TaskList',
@@ -28,6 +40,8 @@ export default defineComponent({
     taskStore.sortTasks()
     return {
       tasks: taskStore.getState().tasks,
+      tasksJson: computed(() => JSON.stringify(
+          taskStore.getState().tasks.map(task => serialize(Task, task)), null, 2)),
       addTask () {
         taskStore.addTask(new Task(authStore.getState().clientId))
       }
