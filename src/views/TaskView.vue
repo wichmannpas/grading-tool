@@ -1,6 +1,8 @@
 <template>
   <div v-if="task !== undefined">
-    <h1>Task »{{ task.name }}«</h1>
+    <h1>Task »{{ task.name }}«<template v-if="task.isSynchronized()"> (synchronized)</template></h1>
+    <div class="toast toast-success"
+         v-if="task.isSynchronized()">This task is in scope for synchronization.</div>
 
     <div class="btn-group btn-group-block">
       <router-link :to="{ name: 'Home' }" class="btn">

@@ -49,6 +49,7 @@ function sendMessage (message: Object) {
 function handleMessage (message: any) {
   if (message.command === 'authSucceeded') {
     authStore.setAuthToken(message.token)
+    authStore.setGroups(message.groups)
     syncTasks(true)
   } else if (message.command === 'authFailed') {
     authStore.clearAuthToken()
@@ -77,6 +78,13 @@ export function attemptLogin (username: string, password: string) {
 export function checkAuth (authToken: string) {
   sendMessage({
     command: 'checkAuth',
+    authToken
+  })
+}
+
+export function logout (authToken: string) {
+  sendMessage({
+    command: 'logout',
     authToken
   })
 }

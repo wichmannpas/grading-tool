@@ -7,7 +7,8 @@ interface AuthInfo extends Object {
   workingLocally: boolean,
   authFailed: boolean,
   clientId: string,
-  authToken: null | string
+  authToken: null | string,
+  groups: Array<string>
 }
 
 class AuthStore extends Store<AuthInfo> {
@@ -28,7 +29,8 @@ class AuthStore extends Store<AuthInfo> {
       workingLocally: true,
       authFailed: false,
       clientId,
-      authToken
+      authToken,
+      groups: []
     }
   }
 
@@ -53,6 +55,10 @@ class AuthStore extends Store<AuthInfo> {
     this.state.authFailed = false
 
     localStorage.setItem('authToken', token)
+  }
+
+  setGroups (groups: Array<string>) {
+    this.state.groups.splice(0, this.state.groups.length, ...groups)
   }
 }
 

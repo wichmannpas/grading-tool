@@ -1,6 +1,7 @@
 import { date, identifier, list, object, serializable } from 'serializr'
 import { randomString } from '@/utils'
 import { SubTask } from '@/models/subtask'
+import { authStore } from '@/store/auth'
 
 export class Task {
   constructor (clientId: string = '') {
@@ -22,4 +23,12 @@ export class Task {
 
   @serializable(list(object(SubTask)))
   subtasks: SubTask[] = []
+
+  isSynchronized (): boolean {
+    const authState = authStore.getState()
+    if (authState.workingLocally) {
+      return false
+    }
+    return authState.groups.find(group => this.name.startsWith(group)) !== undefined
+  }
 }
