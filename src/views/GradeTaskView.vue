@@ -121,6 +121,10 @@ export default {
         text += subtask.name + '\n'
         const maxPoints = parseFloat(subtask.maxPoints)
         let points = maxPoints
+        if (subtask.isBonus) {
+          // start with 0 points for bonus tasks
+          points = 0
+        }
 
         subtask.comments.forEach(comment => {
           if (grading.value.commentIds.indexOf(comment.id) >= 0) {

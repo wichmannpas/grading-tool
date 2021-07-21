@@ -3,11 +3,13 @@
        :class="{ done: done }"
        class="grade-subtask">
     <h3>
-      <label class="form-checkbox">
+      <label :class="{ 'subtask-bonus': subtask.isBonus }"
+             class="form-checkbox">
         <input v-model="done"
                type="checkbox" />
         <i class="form-icon"></i>
 
+        <template v-if="subtask.isBonus">Bonus</template>
         Subtask »{{ subtask.name }}« ({{ subtask.maxPoints }}P)
       </label>
     </h3>

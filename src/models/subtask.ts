@@ -20,6 +20,9 @@ export class SubTask {
   @serializable
   name: string = ''
 
+  @serializable
+  isBonus = false
+
   @serializable(custom((value: any) => parseFloat(value), (value: any) => value.toString()))
   maxPoints: number = 0
 

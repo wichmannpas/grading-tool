@@ -12,6 +12,9 @@
           <th>
             Comments
           </th>
+          <th>
+            Bonus
+          </th>
           <th class="text-right">
             Max. Points
           </th>

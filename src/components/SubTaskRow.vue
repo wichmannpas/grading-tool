@@ -33,6 +33,14 @@
         </li>
       </ul>
     </td>
+    <td>
+      <label class="form-switch">
+        <input
+            v-model="subtaskIsBonus"
+            type="checkbox" />
+        <i class="form-icon"></i>
+      </label>
+    </td>
     <td class="text-right">
       <input
           v-model="subtaskMaxPoints"
@@ -59,6 +67,7 @@ export default defineComponent({
   },
   setup (props) {
     const subtaskName = ref('')
+    const subtaskIsBonus = ref(false)
     const subtaskMaxPoints = ref(0)
 
     watchEffect(() => {
@@ -66,6 +75,7 @@ export default defineComponent({
         return
       }
       subtaskName.value = props.subtask.name
+      subtaskIsBonus.value = props.subtask.isBonus
       subtaskMaxPoints.value = props.subtask.maxPoints
     })
 
@@ -75,6 +85,14 @@ export default defineComponent({
       }
       taskStore.updateSubtask(props.task, props.subtask, (newSubtask: SubTask) => {
         newSubtask.name = name
+      })
+    })
+    watch(subtaskIsBonus, isBonus => {
+      if (props.subtask !== undefined && subtaskIsBonus.value === props.subtask.isBonus) {
+        return
+      }
+      taskStore.updateSubtask(props.task, props.subtask, (newSubtask: SubTask) => {
+        newSubtask.isBonus = isBonus
       })
     })
     watch(subtaskMaxPoints, maxPoints => {
@@ -106,6 +124,7 @@ export default defineComponent({
 
     return {
       subtaskName,
+      subtaskIsBonus,
       subtaskMaxPoints,
       canMoveUp: canMoveComputed(-1),
       canMoveDown: canMoveComputed(1),
