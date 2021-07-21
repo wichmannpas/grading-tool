@@ -176,6 +176,7 @@ export default {
       if (value === 0) {
         feedbackTextDisplay.value.focus()
         feedbackTextDisplay.value.select()
+        document.execCommand('copy')
       }
     })
 
