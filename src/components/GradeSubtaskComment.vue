@@ -11,7 +11,7 @@
           <i class="form-icon"></i>
         </span>
       </div>
-      <div class="col-8">
+      <div class="col-7">
         <template v-if="!editing">
           {{ subtaskComment.text }}
         </template>
@@ -22,7 +22,7 @@
                   rows="4"
                   @keydown.enter="editing = false; $event.preventDefault()" />
       </div>
-      <div class="col-1">
+      <div class="col-1 text-right">
         <template v-if="!editing">
           ({{ subtaskComment.points }}P)
         </template>
@@ -33,7 +33,7 @@
                type="number"
                @keydown.enter="editing = false" />
       </div>
-      <div class="col-2 text-right">
+      <div class="col-3 text-right">
         <button v-if="!editing"
                 class="btn btn-sm tooltip"
                 data-tooltip="Edit comment"
@@ -45,6 +45,20 @@
                 data-tooltip="Finish editing"
                 @click="editing = false; $event.preventDefault()">
           <i class="icon icon-check"></i>
+        </button>
+        <button :disabled="!canMoveUp"
+                class="btn btn-sm tooltip"
+                data-tooltip="Move Up"
+                tabindex="-1"
+                @click="moveComment(-1)">
+          <i class="icon icon-arrow-up"></i>
+        </button>
+        <button :disabled="!canMoveDown"
+                class="btn btn-sm tooltip"
+                data-tooltip="Move Down"
+                tabindex="-1"
+                @click="moveComment(1)">
+          <i class="icon icon-arrow-down"></i>
         </button>
         <button class="btn btn-sm btn-error tooltip"
                 data-tooltip="Delete comment"
@@ -60,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref, watch, watchEffect } from 'vue'
+import { computed, defineComponent, ref, Ref, watch, watchEffect } from 'vue'
 import { SubtaskComment } from '@/models/subtaskComment'
 import { taskStore } from '@/store/task'
 import { SubTask } from '@/models/subtask'
@@ -136,12 +150,32 @@ export default defineComponent({
       selected.value = value.indexOf(props.subtaskComment.id) >= 0
     })
 
+    function canMoveComputed (direction: number) {
+      return computed(() => {
+        // for some reason, TypeScript thinks that props.subtask is possibly undefined despite the check
+        // up here; as a workaround, copy its value into a local variable
+        const propsComment = props.subtaskComment as SubtaskComment | undefined
+        const propsSubtask = props.subtask as SubTask | undefined
+        if (propsComment === undefined || propsSubtask === undefined) {
+          return false
+        }
+        const commentIndex = propsSubtask.comments.findIndex(comment => comment.id === propsComment.id)
+        if (direction > 0) {
+          return commentIndex < propsSubtask.comments.length - 1
+        } else {
+          return commentIndex > 0
+        }
+      })
+    }
+
     return {
       selected,
       editing,
       commentText,
       commentPoints,
       textInput,
+      canMoveUp: canMoveComputed(-1),
+      canMoveDown: canMoveComputed(1),
       startEditing () {
         editing.value = true
         focusTextInput()
@@ -159,6 +193,28 @@ export default defineComponent({
         taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
           const index = newSubtask.comments.findIndex(comment => comment.id === subtaskComment.id)
           newSubtask.comments.splice(index, 1)
+        })
+      },
+      moveComment (direction: number) {
+        // for some reason, TypeScript thinks that props.subtask is possibly undefined despite the check
+        // up here; as a workaround, copy its value into a local variable
+        const propsComment = props.subtaskComment as SubtaskComment | undefined
+        const propsSubtask = props.subtask as SubTask | undefined
+        const propsTask = props.task as Task | undefined
+        if (propsComment === undefined || propsSubtask === undefined || propsTask === undefined) {
+          return false
+        }
+        taskStore.updateSubtask(propsTask, propsSubtask, newSubtask => {
+          const commentIndex = newSubtask.comments.findIndex(comment => comment.id === propsComment.id)
+          const newIndex = commentIndex + direction
+
+          if (newIndex < 0 || newIndex >= newSubtask.comments.length) {
+            console.warn('new index out of range for comment')
+            return
+          }
+
+          newSubtask.comments.splice(commentIndex, 1)
+          newSubtask.comments.splice(newIndex, 0, propsComment)
         })
       }
     }
