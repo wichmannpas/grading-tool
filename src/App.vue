@@ -18,7 +18,7 @@
   </div>
   <div class="footer">
     Korrekturtool by Pascal Wichmann.
-    Copyright &copy; {{ copyrightYear }}
+    <!-- Copyright &copy; {{ copyrightYear }} //-->
   </div>
 </template>
 

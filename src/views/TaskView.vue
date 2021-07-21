@@ -1,8 +1,11 @@
 <template>
   <div v-if="task !== undefined">
-    <h1>Task »{{ task.name }}«<template v-if="task.isSynchronized()"> (synchronized)</template></h1>
-    <div class="toast toast-success"
-         v-if="task.isSynchronized()">This task is in scope for synchronization.</div>
+    <h1>Task »{{ task.name }}«
+      <template v-if="task.isSynchronized()"> (synchronized)</template>
+    </h1>
+    <div v-if="task.isSynchronized()"
+         class="toast toast-success">This task is in scope for synchronization.
+    </div>
 
     <div class="btn-group btn-group-block">
       <router-link :to="{ name: 'Home' }" class="btn">
@@ -46,7 +49,7 @@
 </template>
 
 <script>
-import {computed, ref, watch, watchEffect} from 'vue';
+import {computed, onMounted, ref, watch, watchEffect} from 'vue';
 import {taskStore} from "@/store/task";
 import router from "@/router";
 import {Task} from "@/models/task";
@@ -74,6 +77,13 @@ export default {
     const taskJson = ref('')
     let lastJsonValue = ''
     const jsonInvalid = ref(false)
+
+    function updateTitle () {
+      document.title = task.value.name + ' • Korrekturtool'
+    }
+
+    onMounted(updateTitle)
+    watch(task, updateTitle)
 
     watchEffect(() => {
       if (task.value === undefined) {

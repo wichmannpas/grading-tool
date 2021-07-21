@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import {computed, ref, Ref, watch} from 'vue';
+import {computed, onMounted, ref, Ref, watch} from 'vue';
 import {taskStore} from "@/store/task";
 import router from "@/router";
 import GradeSubtask from "@/components/GradeSubtask";
@@ -84,6 +84,13 @@ export default {
       }
       return task
     })
+
+    function updateTitle () {
+      document.title = task.value.name
+    }
+
+    onMounted(updateTitle)
+    watch(task, updateTitle)
 
     function createNewGrading () {
       if (task.value === undefined) {
