@@ -44,6 +44,22 @@
   opacity: 0.9;
 }
 
+@media (min-width: 841px) {
+  .grade-feedback-column {
+    width: 31vw;
+
+    position: absolute;
+
+    right: 1em;
+
+    &.stick-to-top {
+      position: fixed;
+      top: 3em;
+      bottom: 1em;
+    }
+  }
+}
+
 .main-content {
   margin-bottom: 1.8rem;
 }

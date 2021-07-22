@@ -11,14 +11,16 @@
       </router-link>
     </p>
 
-    <div class="columns">
+    <div ref="gradeMainColumns"
+         class="columns">
       <div class="column col-8 col-md-12">
         <GradeSubtask v-for="subtask in task.subtasks"
                       :key="subtask.id"
                       :subtask="subtask"
                       :task="task" />
       </div>
-      <div class="column col-4 col-md-12">
+      <div :class="{ 'stick-to-top': stickToTop }"
+           class="column grade-feedback-column col-4 col-md-12">
         <!-- TODO: ggf. history speichern (und dann einen Back-button?) //-->
         <div class="btn-group btn-group-block">
           <button class="btn"
@@ -49,7 +51,7 @@
                   :class="{ 'is-error': remainingSubtasks > 0 }"
                   class="form-input feedback-textarea"
                   readonly
-                  rows="25"
+                  rows="30"
                   @click="$event.target.select()"></textarea>
       </div>
     </div>
@@ -60,7 +62,7 @@
 </template>
 
 <script>
-import {computed, onMounted, ref, Ref, watch} from 'vue';
+import {computed, onBeforeMount, onUnmounted, onMounted, ref, Ref, watch} from 'vue';
 import {taskStore} from "@/store/task";
 import router from "@/router";
 import GradeSubtask from "@/components/GradeSubtask";
@@ -83,6 +85,33 @@ export default {
         })
       }
       return task
+    })
+
+    const stickToTop = ref(false)
+    const gradeMainColumns = ref(null)
+
+    function handleScroll () {
+      let container = gradeMainColumns
+      if (container.value === null) {
+        // component not yet there
+        return
+      }
+
+      const fontSize = parseFloat(getComputedStyle(container.value).fontSize)
+
+      let top = container.value.offsetTop
+      let windowTop = window.scrollY
+      // 3em margin for stickyness
+      windowTop += 3 * fontSize
+
+      stickToTop.value = windowTop > top
+    }
+
+    onBeforeMount(() => {
+      window.addEventListener('scroll', handleScroll)
+    })
+    onUnmounted(() => {
+      window.removeEventListener('scroll', handleScroll)
     })
 
     function updateTitle () {
@@ -186,7 +215,9 @@ export default {
       feedback,
       feedbackTextDisplay,
       newGrading: createNewGrading,
-      remainingSubtasks
+      remainingSubtasks,
+      gradeMainColumns,
+      stickToTop
     }
   }
 }
