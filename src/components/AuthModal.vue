@@ -15,6 +15,7 @@
             <label class="form-label"
                    for="auth-password">Username</label>
             <input id="auth-username"
+                   ref="usernameInput"
                    v-model="userData.username"
                    class="form-input"
                    placeholder="Username"
@@ -50,18 +51,27 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref, Ref } from 'vue'
 import { authStore } from '@/store/auth'
 import { attemptLogin } from '@/websocket'
 
 export default defineComponent({
   name: 'AuthModal',
   setup () {
+    const usernameInput: Ref<HTMLInputElement | null> = ref(null)
     const userData = reactive({
       username: '',
       password: ''
     })
+
+    onMounted(() => {
+      if (usernameInput.value === null)
+        return
+      usernameInput.value.focus()
+    })
+
     return {
+      usernameInput,
       userData,
       authFailed: computed(() => authStore.getState().authFailed),
       dismissAuth () {
