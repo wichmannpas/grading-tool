@@ -1,6 +1,7 @@
 <template>
   <div v-if="subtask !== undefined"
        :class="{ done: done }"
+       :data-subtask-id="subtask.id"
        class="grade-subtask">
     <h3>
       <label :class="{ 'subtask-bonus': subtask.isBonus }"
@@ -49,8 +50,34 @@ export default defineComponent({
     subtask: SubTask
   },
   setup (props) {
+    function scrollToNextSubtask () {
+      if (props.subtask === undefined)
+        return
+      const subtasks = document.getElementsByClassName('grade-subtask')
+      let foundOwn = false
+      for (let i = 0; i < subtasks.length; i++) {
+        const subtaskElement = subtasks[i] as HTMLElement
+        if (subtaskElement.getAttribute('data-subtask-id') === props.subtask.id) {
+          foundOwn = true
+          continue
+        }
+        if (foundOwn) {
+          const target = subtaskElement.offsetTop - 15
+          if (target < 0) {
+            return
+          }
+          window.scrollTo(0, target)
+          break
+        }
+      }
+    }
+
     const done = ref(false)
     watch(done, value => {
+      if (value) {
+        scrollToNextSubtask()
+      }
+
       const subtask: SubTask | undefined = props.subtask
       if (subtask === undefined) {
         return
