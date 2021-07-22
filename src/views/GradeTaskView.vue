@@ -128,6 +128,7 @@ export default {
       const newGrading = new Grading()
       newGrading.task = task.value
       gradingStore.setCurrentGrading(newGrading)
+      window.scrollTo(0, 0)
     }
 
     const grading = computed(() => gradingStore.getState().currentGrading)
