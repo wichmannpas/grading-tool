@@ -115,6 +115,9 @@ export default {
     })
 
     function updateTitle () {
+      if (task.value === undefined) {
+        return
+      }
       document.title = task.value.name
     }
 

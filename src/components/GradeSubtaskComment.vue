@@ -17,21 +17,21 @@
         </template>
         <textarea v-if="editing"
                   ref="textInput"
-                  v-model="commentText"
+                  v-model="commentTextEdit"
                   class="form-input"
                   rows="4"
-                  @keydown.enter="editing = false; $event.preventDefault()" />
+                  @keydown.enter="finishEditing(); $event.preventDefault()" />
       </div>
       <div class="col-1 text-right">
         <template v-if="!editing">
           ({{ subtaskComment.points }}P)
         </template>
         <input v-if="editing"
-               v-model="commentPoints"
+               v-model="commentPointsEdit"
                class="form-input"
                step="0.5"
                type="number"
-               @keydown.enter="editing = false" />
+               @keydown.enter="finishEditing" />
       </div>
       <div class="col-3 text-right">
         <button v-if="!editing"
@@ -43,7 +43,7 @@
         <button v-if="editing"
                 class="btn btn-sm btn-success tooltip"
                 data-tooltip="Finish editing"
-                @click="editing = false; $event.preventDefault()">
+                @click="finishEditing(); $event.preventDefault()">
           <i class="icon icon-check"></i>
         </button>
         <button :disabled="!canMoveUp"
@@ -93,7 +93,9 @@ export default defineComponent({
     const selected = ref(false)
     const editing = ref(false)
     const commentText = ref('')
+    const commentTextEdit = ref('')
     const commentPoints: Ref<number> = ref(0)
+    const commentPointsEdit: Ref<number> = ref(0)
     const textInput: Ref<null | HTMLTextAreaElement> = ref(null)
 
     function focusTextInput () {
@@ -137,6 +139,9 @@ export default defineComponent({
       if (isNaN(value)) {
         return
       }
+      if (props.subtaskComment !== undefined && commentPoints.value === props.subtaskComment.points) {
+        return
+      }
       taskStore.updateSubtaskComment(props.task, props.subtask, props.subtaskComment, newComment => {
         newComment.points = value
       })
@@ -172,13 +177,22 @@ export default defineComponent({
       selected,
       editing,
       commentText,
+      commentTextEdit,
       commentPoints,
+      commentPointsEdit,
       textInput,
       canMoveUp: canMoveComputed(-1),
       canMoveDown: canMoveComputed(1),
       startEditing () {
         editing.value = true
         focusTextInput()
+        commentTextEdit.value = commentText.value
+        commentPointsEdit.value = commentPoints.value
+      },
+      finishEditing () {
+        editing.value = false
+        commentText.value = commentTextEdit.value
+        commentPoints.value = commentPointsEdit.value
       },
       deleteComment () {
         const subtaskComment: SubtaskComment | undefined = props.subtaskComment
