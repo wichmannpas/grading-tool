@@ -20,7 +20,7 @@
                   v-model="commentTextEdit"
                   class="form-input"
                   rows="4"
-                  @keydown.enter="finishEditing(); $event.preventDefault()" />
+                  @keydown.enter="finishEditing" />
       </div>
       <div class="col-1 text-right">
         <template v-if="!editing">
@@ -43,7 +43,7 @@
         <button v-if="editing"
                 class="btn btn-sm btn-success tooltip"
                 data-tooltip="Finish editing"
-                @click="finishEditing(); $event.preventDefault()">
+                @click="finishEditing">
           <i class="icon icon-check"></i>
         </button>
         <button :disabled="!canMoveUp"
@@ -124,29 +124,6 @@ export default defineComponent({
       }
     })
 
-    watch(commentText, value => {
-      if (props.subtaskComment !== undefined && commentText.value === props.subtaskComment.text) {
-        return
-      }
-      taskStore.updateSubtaskComment(props.task, props.subtask, props.subtaskComment, newComment => {
-        newComment.text = value
-      })
-    })
-    watch(commentPoints, value => {
-      if (typeof value === 'string') {
-        value = parseFloat(value)
-      }
-      if (isNaN(value)) {
-        return
-      }
-      if (props.subtaskComment !== undefined && commentPoints.value === props.subtaskComment.points) {
-        return
-      }
-      taskStore.updateSubtaskComment(props.task, props.subtask, props.subtaskComment, newComment => {
-        newComment.points = value
-      })
-    })
-
     watch(selected, value => gradingStore.setCurrentGradingCommentActive(props.subtaskComment, value))
     watch(() => gradingStore.getState().currentGrading.commentIds, value => {
       if (props.subtaskComment === undefined) {
@@ -184,13 +161,31 @@ export default defineComponent({
       canMoveUp: canMoveComputed(-1),
       canMoveDown: canMoveComputed(1),
       startEditing () {
-        editing.value = true
-        focusTextInput()
         commentTextEdit.value = commentText.value
         commentPointsEdit.value = commentPoints.value
+        editing.value = true
+        focusTextInput()
       },
-      finishEditing () {
+      finishEditing (event: Event) {
+        let pointsValue = commentPointsEdit.value
+        if (typeof pointsValue === 'string') {
+          pointsValue = parseFloat(pointsValue)
+        }
+        if (isNaN(pointsValue)) {
+          return
+        }
+
+        event.preventDefault()
         editing.value = false
+
+        if (commentText.value === commentTextEdit.value && commentPoints.value === commentPointsEdit.value) {
+          // nothing has changed
+          return
+        }
+        taskStore.updateSubtaskComment(props.task, props.subtask, props.subtaskComment, newComment => {
+          newComment.text = commentTextEdit.value
+          newComment.points = commentPointsEdit.value
+        })
         commentText.value = commentTextEdit.value
         commentPoints.value = commentPointsEdit.value
       },
