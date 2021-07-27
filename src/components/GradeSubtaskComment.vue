@@ -89,7 +89,7 @@ export default defineComponent({
     subtaskComment: SubtaskComment,
     done: Boolean
   },
-  setup (props) {
+  setup (props, { emit }) {
     const selected = ref(false)
     const editing = ref(false)
     const commentText = ref('')
@@ -124,7 +124,13 @@ export default defineComponent({
       }
     })
 
-    watch(selected, value => gradingStore.setCurrentGradingCommentActive(props.subtaskComment, value))
+    watch(selected, value => {
+      if (props.subtaskComment === undefined)
+        return
+      gradingStore.setCurrentGradingCommentActive(props.subtaskComment, value)
+      if (value && props.subtaskComment.text.toLocaleLowerCase().replace('.', '') === 'fehlt')
+        emit('mark-subtask-done')
+    })
     watch(() => gradingStore.getState().currentGrading.commentIds, value => {
       if (props.subtaskComment === undefined) {
         return

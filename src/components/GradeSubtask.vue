@@ -16,6 +16,7 @@
     </h3>
 
     <GradeSubtaskComment v-for="comment in subtask.comments"
+                         @mark-subtask-done="done = true"
                          :key="comment.id"
                          :done="done"
                          :subtask="subtask"
