@@ -11,17 +11,17 @@
         <i class="form-icon"></i>
 
         <template v-if="subtask.isBonus">Bonus</template>
-        Subtask »{{ subtask.name }}« ({{ subtask.maxPoints }}P)
+        Subtask »{{ subtask.name }}« ({{ currentPoints }}/{{ subtask.maxPoints }}P)
       </label>
     </h3>
 
     <GradeSubtaskComment v-for="comment in subtask.comments"
-                         @mark-subtask-done="done = true"
                          :key="comment.id"
                          :done="done"
                          :subtask="subtask"
                          :subtask-comment="comment"
-                         :task="task" />
+                         :task="task"
+                         @mark-subtask-done="done = true" />
 
     <button class="btn btn-sm btn-block"
             @click="addComment">
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { SubTask } from '@/models/subtask'
 import { Task } from '@/models/task'
 import GradeSubtaskComment from '@/components/GradeSubtaskComment.vue'
@@ -105,6 +105,13 @@ export default defineComponent({
     })
     return {
       done,
+      currentPoints: computed(() => {
+        if (props.subtask === undefined) {
+          return 0
+        }
+        const { subtaskPoints } = props.subtask.calculatePoints(gradingStore.getState().currentGrading)
+        return subtaskPoints
+      }),
       addComment () {
         taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
           const newComment = new SubtaskComment(true)

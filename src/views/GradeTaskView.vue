@@ -152,34 +152,11 @@ export default {
         }
 
         text += subtask.name + '\n'
-        const maxPoints = parseFloat(subtask.maxPoints)
-        let points = maxPoints
-        if (subtask.isBonus) {
-          // start with 0 points for bonus tasks
-          points = 0
-        }
 
-        subtask.comments.forEach(comment => {
-          if (grading.value.commentIds.indexOf(comment.id) >= 0) {
-            const commentPoints = parseFloat(comment.points)
-            text += comment.text
-            if (commentPoints !== 0) {
-              text += ' (' + commentPoints.toString() + 'P)'
-            }
-            text += '\n'
+        const {subtaskText, subtaskPoints} = subtask.calculatePoints(grading.value)
+        text += subtaskText
 
-            points += commentPoints
-          }
-        })
-
-        if (points > maxPoints) {
-          console.warn('too many points!')
-          points = maxPoints
-        } else if (points < 0) {
-          points = 0
-        }
-        text += points.toString() + '/' + subtask.maxPoints.toString()
-        totalPoints += points
+        totalPoints += subtaskPoints
       })
       return {
         totalPoints,
