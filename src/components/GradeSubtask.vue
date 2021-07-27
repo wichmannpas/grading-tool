@@ -15,19 +15,24 @@
       </label>
     </h3>
 
-    <GradeSubtaskComment v-for="comment in subtask.comments"
-                         :key="comment.id"
-                         :done="done"
-                         :subtask="subtask"
-                         :subtask-comment="comment"
-                         :task="task"
-                         @mark-subtask-done="done = true" />
-
-    <button class="btn btn-sm btn-block"
-            @click="addComment">
+    <button class="btn btn-sm btn-block add-comment"
+            @click="addComment(-1)">
       <i class="icon icon-plus"></i>
       Add comment
     </button>
+    <template v-for="(comment, i) in subtask.comments"
+              :key="comment.id">
+      <GradeSubtaskComment :done="done"
+                           :subtask="subtask"
+                           :subtask-comment="comment"
+                           :task="task"
+                           @mark-subtask-done="done = true" />
+      <button class="btn btn-sm btn-block add-comment"
+              @click="addComment(i)">
+        <i class="icon icon-plus"></i>
+        Add comment
+      </button>
+    </template>
   </div>
   <div v-else />
 </template>
@@ -112,12 +117,12 @@ export default defineComponent({
         const { subtaskPoints } = props.subtask.calculatePoints(gradingStore.getState().currentGrading)
         return subtaskPoints
       }),
-      addComment () {
+      addComment (afterIndex: number) {
         taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
           const newComment = new SubtaskComment(true)
           newComment.lastChanged = new Date()
           newComment.lastChangeClientId = authStore.getClientId()
-          newSubtask.comments.push(newComment)
+          newSubtask.comments.splice(afterIndex + 1, 0, newComment)
           gradingStore.setCurrentGradingCommentActive(newComment, true)
         })
       }
