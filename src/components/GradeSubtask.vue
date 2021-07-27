@@ -15,11 +15,40 @@
       </label>
     </h3>
 
+    <div class="ephemeral-comment">
+      <button v-if="ephemeralComment === null"
+              class="btn btn-sm btn-block add-ephemeral-comment"
+              @click="addEphemeralComment">
+        <i class="icon icon-plus"></i>
+        Add Ephemeral Comment (for this single grading only)
+      </button>
+      <div v-else>
+        Ephemeral Comment (for this single grading only)
+        <div class="columns">
+          <div class="col-10">
+          <textarea ref="ephemeralCommentInput"
+                    v-model="ephemeralCommentEdit"
+                    class="form-input"
+                    rows="2" />
+          </div>
+          <div class="col-2">
+            <button class="btn btn-sm btn-error tooltip"
+                    data-tooltip="Delete ephemeral comment"
+                    @click="deleteEphemeralComment">
+              <i class="icon icon-delete"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <button v-if="movingActive === null"
-            class="btn btn-sm btn-block add-comment"
+            :class="{ 'add-comment': subtask.comments.length > 0 }"
+            class="btn btn-sm btn-block"
             @click="addComment(-1)">
       <i class="icon icon-plus"></i>
-      Add comment here
+      Add comment
+      <template v-if="subtask.comments.length > 0"> here</template>
     </button>
     <button v-else
             class="btn btn-sm btn-success btn-block move-comment"
@@ -94,6 +123,19 @@ export default defineComponent({
         }
       }
     }
+
+    const ephemeralCommentInput: Ref<HTMLTextAreaElement | null> = ref(null)
+    const ephemeralComment = computed(() => {
+      if (props.subtask === undefined)
+        return null
+      return props.subtask.ephemeralComment
+    })
+    const ephemeralCommentEdit = ref('')
+    watch(ephemeralCommentEdit, value => {
+      taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
+        newSubtask.ephemeralComment = value
+      }, true)
+    })
 
     const movingActive: Ref<null | string> = ref(null)
 
@@ -178,6 +220,29 @@ export default defineComponent({
         })
         movingActive.value = null
       },
+      ephemeralComment,
+      ephemeralCommentEdit,
+      ephemeralCommentInput,
+      addEphemeralComment () {
+        ephemeralCommentEdit.value = ''
+        taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
+          newSubtask.ephemeralComment = ''
+        }, true)
+
+        setTimeout(() => {
+          if (ephemeralCommentInput.value === null)
+            return
+          ephemeralCommentInput.value.focus()
+        }, 50)
+      },
+      deleteEphemeralComment () {
+        if (!confirm('Delete ephemeral comment?')) {
+          return
+        }
+        taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
+          newSubtask.ephemeralComment = null
+        }, true)
+      }
     }
   }
 })

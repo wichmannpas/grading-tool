@@ -1,5 +1,5 @@
+$comment_background: #eeecec;
 .subtask-comment {
-  $comment_background: #eeecec;
   background: $comment_background;
 
   display: block;
@@ -86,4 +86,26 @@
   line-height: 1.1em !important;
   font-size: 0.3rem !important;
   height: 2em !important;
+}
+
+.ephemeral-comment {
+  background: darken($comment_background, 18%);
+
+  display: block;
+  cursor: pointer;
+  border-radius: 1.5em;
+  padding: 0.2em 1em;
+  margin: 0.3em 0.5em 0.7em;
+
+  textarea {
+    margin-left: 1.5em;
+    width: 80%;
+  }
+
+  .add-ephemeral-comment {
+    background: #c4fff1;
+    font-size: 0.55rem !important;
+    height: 1.6em !important;
+    line-height: 1.1em !important;
+  }
 }

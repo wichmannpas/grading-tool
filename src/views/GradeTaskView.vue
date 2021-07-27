@@ -132,6 +132,13 @@ export default {
       newGrading.task = task.value
       gradingStore.setCurrentGrading(newGrading)
       window.scrollTo(0, 0)
+      task.value.subtasks.forEach(subtask => {
+        if (subtask.ephemeralComment !== null) {
+          taskStore.updateSubtask(task.value, subtask, newSubtask => {
+            newSubtask.ephemeralComment = null
+          }, false)
+        }
+      })
     }
 
     const grading = computed(() => gradingStore.getState().currentGrading)
@@ -152,6 +159,10 @@ export default {
         }
 
         text += subtask.name + '\n'
+
+        if (subtask.ephemeralComment !== null) {
+          text += subtask.ephemeralComment + '\n'
+        }
 
         const {subtaskText, subtaskPoints} = subtask.calculatePoints(grading.value)
         text += subtaskText

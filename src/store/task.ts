@@ -70,12 +70,13 @@ class TaskStore extends Store<TaskInfo> {
     syncTasks()
   }
 
-  updateTask (task: Task) {
+  updateTask (task: Task, sync: boolean = true) {
     const index = this.findTaskIndex(task.id)
     this.state.tasks.splice(index, 1, task)
 
     this.updateLocalStorage()
-    syncTasks()
+    if (sync)
+      syncTasks()
   }
 
   deleteTask (id: string) {
@@ -92,7 +93,7 @@ class TaskStore extends Store<TaskInfo> {
     this.updateLocalStorage()
   }
 
-  updateSubtask (task: Task | undefined, subtask: SubTask | undefined, callback: (newSubtask: SubTask) => void) {
+  updateSubtask (task: Task | undefined, subtask: SubTask | undefined, callback: (newSubtask: SubTask) => void, sync: boolean = true) {
     if (task === undefined || subtask === undefined) {
       return
     }
@@ -103,11 +104,11 @@ class TaskStore extends Store<TaskInfo> {
     const newTask = Object.assign(new Task(), task)
     const subtaskIndex = newTask.subtasks.findIndex(subtask => subtask.id === newSubtask.id)
     newTask.subtasks.splice(subtaskIndex, 1, newSubtask)
-    this.updateTask(newTask)
+    this.updateTask(newTask, sync)
   }
 
   updateSubtaskComment (task: Task | undefined, subtask: SubTask | undefined, subtaskComment: SubtaskComment | undefined,
-                        callback: (newComment: SubtaskComment) => void) {
+                        callback: (newComment: SubtaskComment) => void, sync: boolean = true) {
     if (task === undefined || subtask === undefined || subtaskComment === undefined) {
       return
     }
@@ -118,7 +119,7 @@ class TaskStore extends Store<TaskInfo> {
     this.updateSubtask(task, subtask, newSubtask => {
       const index = newSubtask.comments.findIndex(comment => comment.id === newComment.id)
       newSubtask.comments.splice(index, 1, newComment)
-    })
+    }, sync)
   }
 }
 

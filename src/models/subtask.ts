@@ -30,6 +30,8 @@ export class SubTask {
   @serializable(list(object(SubtaskComment)))
   comments: SubtaskComment[] = []
 
+  ephemeralComment: null | string = null
+
   calculatePoints (grading: Grading) {
     let text = ''
 
