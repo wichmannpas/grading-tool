@@ -17,6 +17,10 @@
     margin-top: auto;
     margin-bottom: auto;
   }
+
+  &.moving {
+    background: #4be7d5 !important;
+  }
 }
 
 .grade-subtask {
@@ -76,7 +80,7 @@
   font-size: 0.4rem;
 }
 
-.add-comment {
+.add-comment, .move-comment {
   margin: -0.8em 0;
   padding-top: -4em !important;
   line-height: 1.1em !important;

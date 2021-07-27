@@ -1,6 +1,6 @@
 <template>
   <label v-if="subtaskComment !== undefined"
-         :class="{ active: selected }"
+         :class="{ active: selected, moving: movingActive === subtaskComment.id }"
          class="subtask-comment">
     <div class="columns">
       <div class="col-1">
@@ -46,22 +46,38 @@
                 @click="finishEditing">
           <i class="icon icon-check"></i>
         </button>
-        <button :disabled="!canMoveUp"
+        <button :disabled="!canMoveUp || movingActive !== null"
                 class="btn btn-sm tooltip"
                 data-tooltip="Move Up"
                 tabindex="-1"
-                @click="moveComment(-1)">
+                @click="moveComment(-1); $event.preventDefault()">
           <i class="icon icon-arrow-up"></i>
         </button>
-        <button :disabled="!canMoveDown"
+        <button v-if="movingActive !== subtaskComment.id"
+                :disabled="movingActive !== null"
+                class="btn btn-sm tooltip"
+                data-tooltip="Move …"
+                tabindex="-1"
+                @click="startMoveComment(); $event.preventDefault()">
+          <i class="icon icon-resize-vert"></i>
+        </button>
+        <button v-else
+                class="btn btn-sm tooltip"
+                data-tooltip="Cancel Move"
+                tabindex="-1"
+                @click="stopMoveComment(); $event.preventDefault()">
+          <i class="icon icon-stop"></i>
+        </button>
+        <button :disabled="!canMoveDown || movingActive !== null"
                 class="btn btn-sm tooltip"
                 data-tooltip="Move Down"
                 tabindex="-1"
-                @click="moveComment(1)">
+                @click="moveComment(1); $event.preventDefault()">
           <i class="icon icon-arrow-down"></i>
         </button>
         <button class="btn btn-sm btn-error tooltip"
                 data-tooltip="Delete comment"
+                :disabled="movingActive !== null"
                 @click="deleteComment(); $event.preventDefault()">
           <i class="icon icon-delete"></i>
         </button>
@@ -87,7 +103,8 @@ export default defineComponent({
     task: Task,
     subtask: SubTask,
     subtaskComment: SubtaskComment,
-    done: Boolean
+    done: Boolean,
+    movingActive: String
   },
   setup (props, { emit }) {
     const selected = ref(false)
@@ -210,6 +227,11 @@ export default defineComponent({
           newSubtask.comments.splice(index, 1)
         })
       },
+      startMoveComment () {
+        if (props.subtaskComment === undefined)
+          return
+        emit('start-move-comment', props.subtaskComment.id)
+      },
       moveComment (direction: number) {
         // for some reason, TypeScript thinks that props.subtask is possibly undefined despite the check
         // up here; as a workaround, copy its value into a local variable
@@ -231,6 +253,9 @@ export default defineComponent({
           newSubtask.comments.splice(commentIndex, 1)
           newSubtask.comments.splice(newIndex, 0, propsComment)
         })
+      },
+      stopMoveComment () {
+        emit('stop-move-comment')
       }
     }
   }
