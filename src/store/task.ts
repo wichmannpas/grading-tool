@@ -76,7 +76,7 @@ class TaskStore extends Store<TaskInfo> {
 
     this.updateLocalStorage()
     if (sync)
-      syncTasks()
+      syncTasks(false, [task])
   }
 
   deleteTask (id: string) {
@@ -84,7 +84,9 @@ class TaskStore extends Store<TaskInfo> {
     this.state.tasks.splice(index, 1)
 
     this.updateLocalStorage()
-    syncTasks()
+    // no sync needed here, deletion of tasks is not propagated to server
+    // TODO: add some kind of explicit deletion of tasks and store a list with the ids of deleted tasks
+    //  on the server
   }
 
   sortTasks () {

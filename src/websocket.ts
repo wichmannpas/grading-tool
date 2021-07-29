@@ -89,16 +89,18 @@ export function logout (authToken: string) {
   })
 }
 
-export function syncTasks (sendAll: boolean = false) {
+export function syncTasks (sendAll: boolean = false, tasks: Array<Task> | null = null) {
   const authToken = authStore.getState().authToken
   if (authToken === null) {
     return
   }
+  if (tasks === null)
+    tasks = taskStore.getState().tasks
   sendMessage({
     command: 'syncTasks',
     authToken,
     sendAll,
     clientId: authStore.getState().clientId,
-    tasks: taskStore.getState().tasks
+    tasks
   })
 }
