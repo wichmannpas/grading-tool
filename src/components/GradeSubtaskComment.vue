@@ -26,7 +26,7 @@
         <template v-if="!editing">
           ({{ subtaskComment.points }}P)
         </template>
-        <input v-if="editing"
+        <input v-else
                v-model="commentPointsEdit"
                class="form-input"
                step="0.5"

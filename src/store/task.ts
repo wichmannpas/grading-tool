@@ -58,6 +58,7 @@ class TaskStore extends Store<TaskInfo> {
           for (let j = 0; j < task.subtasks.length; j++) {
             if (task.subtasks[j].id === subtask.id) {
               task.subtasks[j].ephemeralComment = subtask.ephemeralComment
+              task.subtasks[j].ephemeralCommentPoints = subtask.ephemeralCommentPoints
               break
             }
           }

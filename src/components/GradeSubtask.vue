@@ -25,11 +25,17 @@
       <div v-else>
         Ephemeral Comment (for this single grading only)
         <div class="columns">
-          <div class="col-10">
-          <textarea ref="ephemeralCommentInput"
-                    v-model="ephemeralCommentEdit"
-                    class="form-input"
-                    rows="2" />
+          <div class="col-9">
+            <textarea ref="ephemeralCommentInput"
+                      v-model="ephemeralCommentEdit"
+                      class="form-input"
+                      rows="2" />
+          </div>
+          <div class="col-1 text-right">
+            <input v-model="ephemeralCommentPointsEdit"
+                   class="form-input"
+                   step="0.5"
+                   type="number" />
           </div>
           <div class="col-2">
             <button class="btn btn-sm btn-error tooltip"
@@ -136,6 +142,14 @@ export default defineComponent({
         newSubtask.ephemeralComment = value
       }, true)
     })
+    const ephemeralCommentPointsEdit = ref(0)
+    watch(ephemeralCommentPointsEdit, value => {
+      if (isNaN(parseFloat(value as unknown as string)))
+        return
+      taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
+        newSubtask.ephemeralCommentPoints = value
+      }, true)
+    })
 
     const movingActive: Ref<null | string> = ref(null)
 
@@ -222,11 +236,14 @@ export default defineComponent({
       },
       ephemeralComment,
       ephemeralCommentEdit,
+      ephemeralCommentPointsEdit,
       ephemeralCommentInput,
       addEphemeralComment () {
         ephemeralCommentEdit.value = ''
+        ephemeralCommentPointsEdit.value = 0
         taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
           newSubtask.ephemeralComment = ''
+          newSubtask.ephemeralCommentPoints = 0
         }, true)
 
         setTimeout(() => {
@@ -241,6 +258,7 @@ export default defineComponent({
         }
         taskStore.updateSubtask(props.task, props.subtask, newSubtask => {
           newSubtask.ephemeralComment = null
+          newSubtask.ephemeralCommentPoints = null
         }, true)
       }
     }

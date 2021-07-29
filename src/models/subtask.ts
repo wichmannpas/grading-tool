@@ -31,6 +31,7 @@ export class SubTask {
   comments: SubtaskComment[] = []
 
   ephemeralComment: null | string = null
+  ephemeralCommentPoints: null | number = null
 
   calculatePoints (grading: Grading) {
     let text = ''
@@ -40,6 +41,15 @@ export class SubTask {
     if (this.isBonus) {
       // start with 0 points for bonus tasks
       points = 0
+    }
+
+    if (this.ephemeralComment !== null) {
+      text += this.ephemeralComment
+      if (this.ephemeralCommentPoints !== null && this.ephemeralCommentPoints !== 0) {
+        text += ' (' + this.ephemeralCommentPoints.toString() + 'P)'
+        points += parseFloat(this.ephemeralCommentPoints as unknown as string)
+      }
+      text += '\n'
     }
 
     this.comments.forEach(comment => {
