@@ -198,8 +198,11 @@ export default {
         feedbackTextDisplay.value.select()
         document.execCommand('copy')
         setTimeout(() => {
+          // When checked via "missing" comment, the feedback update is delayed.
+          // as a workaround, wait 50ms before select and copy.
           feedbackTextDisplay.value.focus()
           feedbackTextDisplay.value.select()
+          document.execCommand('copy')
         }, 50)
       }
     })
