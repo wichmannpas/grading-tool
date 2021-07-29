@@ -196,6 +196,10 @@ export default {
         feedbackTextDisplay.value.focus()
         feedbackTextDisplay.value.select()
         document.execCommand('copy')
+        setTimeout(() => {
+          feedbackTextDisplay.value.focus()
+          feedbackTextDisplay.value.select()
+        }, 50)
       }
     })
 
