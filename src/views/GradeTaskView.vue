@@ -31,7 +31,7 @@
         </div>
         <div v-if="remainingSubtasks > 0"
              class="toast toast-warning">
-          <em>{{ remainingSubtasks }}</em> subtasks not yet graded.
+          {{ remainingSubtasks }} subtasks not yet graded.
         </div>
         <label class="columns total-points">
           <div class="column col-4">
