@@ -159,7 +159,8 @@ export default {
           text += '\n\n'
         }
 
-        text += subtask.name + '\n'
+        if (subtask.name.trim() !== '')
+          text += subtask.name + '\n'
 
         const {subtaskText, subtaskPoints} = subtask.calculatePoints(grading.value)
         text += subtaskText
