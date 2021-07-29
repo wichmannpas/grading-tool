@@ -124,6 +124,14 @@ export default {
     onMounted(updateTitle)
     watch(task, updateTitle)
 
+    function scrollToFirstSubtask () {
+      const subtasks = document.getElementsByClassName('grade-subtask')
+      if (subtasks.length < 1)
+        return
+      console.log(subtasks[0].offsetTop)
+      window.scrollTo(0, subtasks[0].offsetTop - 15)
+    }
+
     function createNewGrading () {
       if (task.value === undefined) {
         return
@@ -131,7 +139,8 @@ export default {
       const newGrading = new Grading()
       newGrading.task = task.value
       gradingStore.setCurrentGrading(newGrading)
-      window.scrollTo(0, 0)
+      scrollToFirstSubtask()
+
       task.value.subtasks.forEach(subtask => {
         if (subtask.ephemeralComment !== null || subtask.ephemeralCommentPoints !== null) {
           taskStore.updateSubtask(task.value, subtask, newSubtask => {
