@@ -51,6 +51,17 @@ class TaskStore extends Store<TaskInfo> {
     tasks.forEach(task => {
       const index = this.state.tasks.findIndex(t => t.id === task.id)
       if (index !== -1) {
+        // merge ephemeral comments into updated version of task
+        this.state.tasks[index].subtasks.forEach(subtask => {
+          if (subtask.ephemeralComment === null)
+            return
+          for (let j = 0; j < task.subtasks.length; j++) {
+            if (task.subtasks[j].id === subtask.id) {
+              task.subtasks[j].ephemeralComment = subtask.ephemeralComment
+              break
+            }
+          }
+        })
         this.state.tasks.splice(index, 1, task)
       } else {
         this.state.tasks.push(task)
