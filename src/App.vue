@@ -5,7 +5,9 @@
       <p>
         All data is only stored within the browser's local storage!
         Save the exported JSON data to a file to persist or share it.
-        <a class="c-hand" @click="undismissAuth">Login</a>
+        <a v-if="ENABLE_SERVER_SYNCHRONIZATION"
+           class="c-hand"
+           @click="undismissAuth">Login</a>
         <button class="btn btn-link float-right"
                 @click="storageWarningDismissed = !storageWarningDismissed">
           <i class="icon icon-cross"></i>
@@ -26,6 +28,7 @@
 import {computed, ref} from 'vue'
 import {authStore} from "@/store/auth";
 import AuthModal from "@/components/AuthModal";
+import {ENABLE_SERVER_SYNCHRONIZATION} from "@/settings";
 
 export default {
   name: 'App',
@@ -43,7 +46,8 @@ export default {
       }),
       undismissAuth () {
         authStore.setAuthDismissed(false)
-      }
+      },
+      ENABLE_SERVER_SYNCHRONIZATION
     }
   }
 }

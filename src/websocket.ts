@@ -1,4 +1,4 @@
-import { WEBSOCKET_URL } from '@/settings'
+import { ENABLE_SERVER_SYNCHRONIZATION, WEBSOCKET_URL } from '@/settings'
 import { authStore } from '@/store/auth'
 import { taskStore } from '@/store/task'
 import { deserialize } from 'serializr'
@@ -10,6 +10,9 @@ let heartbeatInterval: number | null = null
 
 export function ensureWebsocket () {
   return new Promise<WebSocket>(resolve => {
+    if (!ENABLE_SERVER_SYNCHRONIZATION)
+      return resolve()
+
     if (webs !== null && webs.readyState === 1) {
       return resolve(webs)
     }
@@ -41,6 +44,9 @@ export function ensureWebsocket () {
 }
 
 function sendMessage (message: Object) {
+  if (!ENABLE_SERVER_SYNCHRONIZATION)
+    return
+
   ensureWebsocket().then(websocket => {
     websocket.send(JSON.stringify(message))
   })
@@ -67,6 +73,9 @@ function handleMessage (message: any) {
 }
 
 export function attemptLogin (username: string, password: string) {
+  if (!ENABLE_SERVER_SYNCHRONIZATION)
+    return
+
   sendMessage({
     command: 'login',
     username,
@@ -76,6 +85,9 @@ export function attemptLogin (username: string, password: string) {
 }
 
 export function checkAuth (authToken: string) {
+  if (!ENABLE_SERVER_SYNCHRONIZATION)
+    return
+
   sendMessage({
     command: 'checkAuth',
     authToken
@@ -83,6 +95,9 @@ export function checkAuth (authToken: string) {
 }
 
 export function logout (authToken: string) {
+  if (!ENABLE_SERVER_SYNCHRONIZATION)
+    return
+
   sendMessage({
     command: 'logout',
     authToken
@@ -90,6 +105,9 @@ export function logout (authToken: string) {
 }
 
 export function syncTasks (sendAll: boolean = false, tasks: Array<Task> | null = null) {
+  if (!ENABLE_SERVER_SYNCHRONIZATION)
+    return
+
   const authToken = authStore.getState().authToken
   if (authToken === null) {
     return

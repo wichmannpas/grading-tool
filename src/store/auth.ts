@@ -1,6 +1,7 @@
 import { Store } from './index'
 import { randomString } from '@/utils'
 import { ensureWebsocket } from '@/websocket'
+import { ENABLE_SERVER_SYNCHRONIZATION } from '@/settings'
 
 interface AuthInfo extends Object {
   authDismissed: boolean,
@@ -24,8 +25,10 @@ class AuthStore extends Store<AuthInfo> {
       ensureWebsocket()
     }
 
+    let authDismissed = !ENABLE_SERVER_SYNCHRONIZATION
+
     return {
-      authDismissed: false,
+      authDismissed,
       workingLocally: true,
       authFailed: false,
       clientId,
