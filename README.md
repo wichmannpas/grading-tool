@@ -4,7 +4,12 @@ A tool to automate the workflow of grading submissions, such as exams, tasks, et
 
 Separate Tasks can be graded by assigning comments to each subtask, each comment causing a specific number of points to be added or taken.
 
-By default, all data is locally stored in the browser.
+By default, all data is stored locally in the browser.
+
+## Usage
+
+You can download a pre-built copy from the latest release on GitHub.
+Put the files from the `dist/` directory on a webserver, or start a local server, e.g., using `python3 -m http.server`.
 
 ## Data Synchronization Between Multiple Users
 
